@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>AI Skin Disease Detection</title>
+
+<style>
+
+body{
+font-family: 'Segoe UI';
+margin:0;
+background: linear-gradient(120deg,#00c6ff,#0072ff);
+color:#333;
+}
+
+header{
+background:#1f2d3d;
+color:white;
+padding:20px;
+text-align:center;
+font-size:28px;
+letter-spacing:1px;
+}
+
+.container{
+width:800px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 15px 35px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.upload-box{
+padding:20px;
+border:2px dashed #ddd;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+button{
+background:#00a86b;
+border:none;
+color:white;
+padding:12px 25px;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+background:#008f5a;
+}
+
+.result-card{
+margin-top:25px;
+padding:20px;
+background:#f7f7f7;
+border-radius:10px;
+display:none;
+}
+
+.result-card h3{
+color:#0072ff;
+}
+
+img{
+margin-top:15px;
+max-width:300px;
+border-radius:10px;
+}
+
+.doctor{
+margin-top:40px;
+padding:20px;
+background:#eef7ff;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+AI Skin Disease Detection System
+</header>
+
+<div class="container">
+
+<h2>Upload Skin Image</h2>
+
+<div class="upload-box">
+
+<input type="file" id="imageInput">
+
+<br>
+
+<button onclick="predict()">Predict Disease</button>
+
+</div>
+
+<div id="result" class="result-card">
+
+<h3>Prediction Result</h3>
+
+<p id="disease"></p>
+<p id="confidence"></p>
+
+<img id="preview">
+
+<h4>All Probabilities</h4>
+
+<div id="probabilities"></div>
+
+</div>
+
+<div class="doctor">
+
+<h2>Doctor Consultation</h2>
+
+<p>If symptoms persist please consult a dermatologist.</p>
+
+<h3>Dr. Rahul Sharma</h3>
+
+<p>Dermatologist</p>
+
+<p>📞 +91 9876543210</p>
+
+<p>📧 doctor@example.com</p>
+
+<button onclick="alert('Appointment booked')">Book Appointment</button>
+
+<button onclick="alert('Doctor chat started')">Chat with Doctor</button>
+
+<button onclick="alert('Video consultation started')">Video Consultation</button>
+
+</div>
+
+</div>
+
+<script>
+
+async function predict(){
+
+let fileInput = document.getElementById("imageInput")
+
+let file = fileInput.files[0]
+
+if(!file){
+alert("Please select an image")
+return
+}
+
+let formData = new FormData()
+
+formData.append("image",file)
+
+let response = await fetch("/predict",{
+method:"POST",
+body:formData
+})
+
+let data = await response.json()
+
+document.getElementById("result").style.display="block"
+
+document.getElementById("disease").innerHTML =
+"<b>Disease:</b> "+data.prediction.class
+
+document.getElementById("confidence").innerHTML =
+"<b>Confidence:</b> "+data.prediction.confidence
+
+document.getElementById("preview").src = data.original_image
+
+let probHTML=""
+
+data.all_probabilities.forEach(p=>{
+probHTML += p.class + " : " + p.percentage + "<br>"
+})
+
+document.getElementById("probabilities").innerHTML = probHTML
+
+}
+
+</script>
+
+</body>
+
+</html>
